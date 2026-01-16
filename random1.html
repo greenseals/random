@@ -123,8 +123,9 @@
 
     // 🔹 PC IP 기반 링크: 폰에서도 접속 가능
     // 여기서 192.168.0.5 를 자신의 PC IPv4 주소로 바꿔야 함
-    const pcIP = "192.168.219.102"; 
-    const linkUrl = `http://${pcIP}:5500/${encodeURIComponent(items[selected])}.html`;
+    const repoURL = "https://username.github.io/repo-name";
+    const linkUrl = `${repoURL}/${encodeURIComponent(items[selected])}.html`;
+
 
     result.innerHTML = `결과: <a href="${linkUrl}" target="_blank">${items[selected]}</a>`;
   });
