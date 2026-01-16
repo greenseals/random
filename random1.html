@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>카테고리 돌림판</title>
+  <style>
+    body {
+      text-align: center;
+      font-family: Arial, sans-serif;
+    }
+    canvas {
+      border-radius: 50%;
+      margin-top: 20px;
+    }
+    select, button {
+      margin: 10px;
+      padding: 8px 12px;
+      font-size: 14px;
+    }
+    .result {
+      margin-top: 15px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    .result a {
+      color: blue;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+<h1>카테고리 돌림판</h1>
+
+<select id="categorySelect">
+  <option value="TYPE">종류</option>
+  <option value="AR">돌격소총</option>
+  <option value="LMG">경기관총</option>
+  <option value="SMG">기관단총</option>
+  <option value="DMR">지정사수소총</option>
+  <option value="SR">저격소총</option>
+  <option value="Shot">산탄총</option>
+  <option value="CB">카빈</option>
+  <option value="Pis">권총</option>
+  <option value="ALL">모든 총</option>
+</select>
+
+<br>
+
+<canvas id="wheel" width="250" height="250"></canvas>
+
+<br>
+
+<button id="spinBtn">돌리기</button>
+
+<div class="result" id="result"></div>
+
+<script>
+  const categories = {
+    TYPE: ["돌격소총", "경기관총", "기관단총", "지정사수소총", "저격소총", "산탄총", "카빈", "권총"],
+    AR: ["M4", "AK", "SCAR"],
+    LMG: ["M249", "PKM"],
+    SMG: ["MP5", "UZI"],
+    DMR: ["SKS", "MK12"],
+    SR: ["AWM", "M24"],
+    Shot: ["S12K", "DBS"],
+    CB: ["M4 CQB"],
+    Pis: ["Glock", "Deagle"],
+    ALL: ["M4", "AK", "MP5", "AWM", "Glock"]
+  };
+
+  const colors = ["#EBEB23", "#C7D6DB", "#C6D2BE", "#83B1C9"];
+  const canvas = document.getElementById("wheel");
+  const ctx = canvas.getContext("2d");
+  const radius = canvas.width / 2;
+  const result = document.getElementById("result");
+
+  let items = categories.TYPE;
+  let rotation = 0;
+
+  function drawWheel() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const angle = (2 * Math.PI) / items.length;
+
+    items.forEach((item, i) => {
+      ctx.beginPath();
+      ctx.moveTo(radius, radius);
+      ctx.arc(radius, radius, radius, angle * i + rotation, angle * (i + 1) + rotation);
+
+      ctx.fillStyle = colors[i % colors.length];
+      ctx.fill();
+
+      ctx.lineWidth = 3;           
+      ctx.strokeStyle = "#000";    
+      ctx.stroke();
+
+      ctx.save();
+      ctx.translate(radius, radius);
+      ctx.rotate(angle * i + angle / 2 + rotation);
+      ctx.textAlign = "right";
+      ctx.fillStyle = "#000";
+      ctx.font = "14px Arial";
+      ctx.fillText(item, radius - 10, 5);
+      ctx.restore();
+    });
+  }
+
+  drawWheel();
+
+  document.getElementById("categorySelect").addEventListener("change", e => {
+    items = categories[e.target.value];
+    rotation = 0;
+    result.innerHTML = "";
+    drawWheel();
+  });
+
+  document.getElementById("spinBtn").addEventListener("click", () => {
+    rotation += Math.random() * Math.PI * 4 + Math.PI * 4;
+    drawWheel();
+
+    const angle = (2 * Math.PI) / items.length;
+    const selected = items.length - Math.floor((rotation % (2 * Math.PI)) / angle) - 1;
+
+    // 🔹 PC IP 기반 링크: 폰에서도 접속 가능
+    // 여기서 192.168.0.5 를 자신의 PC IPv4 주소로 바꿔야 함
+    const pcIP = "192.168.219.102"; 
+    const linkUrl = `http://${pcIP}:5500/${encodeURIComponent(items[selected])}.html`;
+
+    result.innerHTML = `결과: <a href="${linkUrl}" target="_blank">${items[selected]}</a>`;
+  });
+</script>
+
+</body>
+</html>
